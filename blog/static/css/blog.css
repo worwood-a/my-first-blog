@@ -2,6 +2,18 @@ body {
     background-color: #1B1B1B;
 }
 
+div p {
+    color: #F1F1F1;
+}
+
+input {
+    color: #1B1B1B;
+}
+
+.one-line h3, .one-line a, .one-line h1 {
+    display: inline-block;
+}
+
 .page-header {
     background-color: #EED212;
     margin-top: 0;
@@ -33,6 +45,7 @@ h1, h2, h3, h4 {
 
 .post-form textarea, .post-form input {
     width: 100%;
+    color: #1B1B1B;
 }
 
 .top-menu, .top-menu:hover, .top-menu:visited {
