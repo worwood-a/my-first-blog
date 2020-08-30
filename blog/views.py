@@ -62,18 +62,20 @@ def valid_start_end_years(form):
     return (start_year <= end_year)
 
 def cv_new(request, form_title):
+    title = form_title
     if request.method == "POST":
-        if ("Education" in form_title):
+        if ("Education" in title):
             form = EducationForm(request.POST)
-        elif ("Technical Skill" in form_title):
+        elif ("Technical Skill" in title):
             form = TechnicalForm(request.POST)
-        elif ("Work Experience" in form_title):
+        elif ("Work Experience" in title):
             form = WorkForm(request.POST)
         else:
+            title = 'New Interest Or Skill'
             form = OtherForm(request.POST)
 
         if form.is_valid():
-            if (("Education" in form_title) or ("Work Experience" in form_title)):
+            if (("Education" in title) or ("Work Experience" in title)):
                 if valid_start_end_years(form):
                     post = form.save(commit=False)
                     post.save()
@@ -90,10 +92,12 @@ def cv_new(request, form_title):
         elif ("Work Experience" in form_title):
             form = WorkForm()
         else:
+            title = 'New Interest Or Skill'
             form = OtherForm()
-    return render(request, 'blog/cv_new.html', {'form': form, 'form_title': form_title})
+    return render(request, 'blog/cv_new.html', {'form': form, 'form_title': title})
 
 def cv_edit(request, form_title, pk):
+    title = form_title
     if ("Education" in form_title):
         post = get_object_or_404(EducationItem, pk=pk)
     elif ("Technical Skill" in form_title):
@@ -101,20 +105,21 @@ def cv_edit(request, form_title, pk):
     elif ("Work Experience" in form_title):
         post = get_object_or_404(WorkItem, pk=pk)
     else:
+        title = "Edit Interest Or Skill"
         post = get_object_or_404(OtherItem, pk=pk)
 
     if request.method == "POST":
-        if ("Education" in form_title):
+        if ("Education" in title):
             form = EducationForm(request.POST, instance=post)
-        elif ("Technical Skill" in form_title):
+        elif ("Technical Skill" in title):
             form = TechnicalForm(request.POST, instance=post)
-        elif ("Work Experience" in form_title):
+        elif ("Work Experience" in title):
             form = WorkForm(request.POST, instance=post)
         else:
             form = OtherForm(request.POST, instance=post)
 
         if form.is_valid():
-            if (("Education" in form_title) or ("Work Experience" in form_title)):
+            if (("Education" in title) or ("Work Experience" in title)):
                 if valid_start_end_years(form):
                     post = form.save(commit=False)
                     post.save()
@@ -124,12 +129,12 @@ def cv_edit(request, form_title, pk):
                 post.save()
                 return redirect('cv')
     else:
-        if ("Education" in form_title):
+        if ("Education" in title):
             form = EducationForm(instance=post)
-        elif ("Technical Skill" in form_title):
+        elif ("Technical Skill" in title):
             form = TechnicalForm(instance=post)
-        elif ("Work Experience" in form_title):
+        elif ("Work Experience" in title):
             form = WorkForm(instance=post)
         else:
             form = OtherForm(instance=post)
-    return render(request, 'blog/cv_new.html', {'form': form, 'form_title': form_title})
+    return render(request, 'blog/cv_new.html', {'form': form, 'form_title': title})

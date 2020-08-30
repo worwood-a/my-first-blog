@@ -4,5 +4,5 @@
     <h2>{{ form_title }}</h2>
     <form method="POST" class="post-form">{% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="save btn btn-default">Save</button>
+        <button type="submit" name='save_button' class="save btn btn-default">Save</button>
 {% endblock %}
