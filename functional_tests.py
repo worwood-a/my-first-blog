@@ -71,8 +71,7 @@ class CVEditorTest(unittest.TestCase):
 
         # Check the header for the page links
         header_texts = self.browser.find_elements_by_tag_name('h1')
-        self.assertIn('Blog', [text.text for text in header_texts])
-        self.assertIn('CV Page', [text.text for text in header_texts])
+        self.assertIn('Blog | CV Page', [text.text for text in header_texts])
 
         # Click on the CV Page button
         page_link = self.browser.find_element_by_link_text('CV Page')
@@ -186,8 +185,9 @@ class CVEditorTest(unittest.TestCase):
         #Find new post
         self.check_for_post_in_div('other', 'Test Interest', 'Test Content')
 
-    def clear_year_box(self, input_box):
-        for i in range(0, 5):
+    def clear_input_box(self, input_box):
+        text_length = len(input_box.get_attribute('value'))
+        for i in range(0, text_length+1):
             input_box.send_keys(Keys.BACKSPACE)
             input_box.send_keys(Keys.DELETE)
 
@@ -216,7 +216,7 @@ class CVEditorTest(unittest.TestCase):
 
         # Adjust the current data in the start_year box
         start_year_box = self.browser.find_element_by_id('id_start_year')
-        self.clear_year_box(start_year_box)
+        self.clear_input_box(start_year_box)
 
         # Enter new start year higher than the current year and attempt to save
         start_year_box.send_keys('2021')
@@ -228,8 +228,8 @@ class CVEditorTest(unittest.TestCase):
         # Adjust the current start year to be valid but the end year to be before 1900
         start_year_box = self.browser.find_element_by_id('id_start_year')
         end_year_box = self.browser.find_element_by_id('id_end_year')
-        self.clear_year_box(start_year_box)
-        self.clear_year_box(end_year_box)
+        self.clear_input_box(start_year_box)
+        self.clear_input_box(end_year_box)
         start_year_box.send_keys('2000')
         end_year_box.send_keys('1899')
         save_button.click()
@@ -239,7 +239,7 @@ class CVEditorTest(unittest.TestCase):
 
         # Make end year higher than current year
         end_year_box = self.browser.find_element_by_id('id_end_year')
-        self.clear_year_box(end_year_box)
+        self.clear_input_box(end_year_box)
         end_year_box.send_keys('2021')
         save_button.click()
 
@@ -248,14 +248,70 @@ class CVEditorTest(unittest.TestCase):
 
         # Adjust the end year so it is lower than the start year
         end_year_box = self.browser.find_element_by_id('id_end_year')
-        self.clear_year_box(end_year_box)
+        self.clear_input_box(end_year_box)
         end_year_box.send_keys('1950')
         save_button.click()
 
         # Verify we're on the same page
         save_button = self.browser.find_element_by_name('save_button')
         
+    def test_can_edit_existing_post(self):
+        # Open blog page and navigate to CV Page
+        response = self.browser.get('http://127.0.0.1:8000')
+        self.browser.find_element_by_link_text('CV Page').click()
 
+        # Add new Education
+        self.browser.find_element_by_link_text('Add New Education').click()
+        self.browser.find_element_by_id('id_name').send_keys('Unedited Test')
+        self.browser.find_element_by_id('id_start_year').send_keys('1901')
+        self.browser.find_element_by_id('id_end_year').send_keys('1902')
+        self.browser.find_element_by_id('id_description').send_keys('This has not been edited')
+        self.browser.find_element_by_name('save_button').click()
+
+        # Find the new post
+        e_posts = self.browser.find_elements_by_name('education')
+        i = 0
+        while (i < len(e_posts)):
+            post = e_posts[i]
+            post_title = post.find_element_by_tag_name('h3').text
+            post_content = post.find_element_by_tag_name('p').text
+            if (post_title == 'Unedited Test: 1901 - 1902' and post_content == 'This has not been edited'):
+                break
+            else:
+                i += 1
+
+        # Fail if we couldn't find the new post, otherwise find its edit button
+        if (i >= len(e_posts)):
+            self.fail('Did not find the new post')
+        
+        edit_button = e_posts[i].find_element_by_link_text('Edit')
+        edit_button.click()
+
+        # Check the form retains the information
+        name_box = self.browser.find_element_by_id('id_name')
+        start_year_box = self.browser.find_element_by_id('id_start_year')
+        end_year_box = self.browser.find_element_by_id('id_end_year')
+        description_box = self.browser.find_element_by_id('id_description')
+        self.assertEqual(name_box.get_attribute('value'), 'Unedited Test')
+        self.assertEqual(start_year_box.get_attribute('value'), '1901')
+        self.assertEqual(end_year_box.get_attribute('value'), '1902')
+        self.assertEqual(description_box.get_attribute('value'), 'This has not been edited')
+
+        # Edit the information
+        self.clear_input_box(name_box)
+        self.clear_input_box(start_year_box)
+        self.clear_input_box(end_year_box)
+        self.clear_input_box(description_box)
+        name_box.send_keys('Edited Test')
+        start_year_box.send_keys('2001')
+        end_year_box.send_keys('2002')
+        description_box.send_keys('This has been edited')
+        self.browser.find_element_by_name('save_button').click()
+
+        e_posts = self.browser.find_elements_by_name('education')
+        # Check the post has been edited
+        self.assertEqual(e_posts[i].find_element_by_tag_name('h3').text, 'Edited Test: 2001 - 2002')
+        self.assertEqual(e_posts[i].find_element_by_tag_name('p').text, 'This has been edited')
 
 if __name__=='__main__':
     unittest.main(warnings='ignore')
