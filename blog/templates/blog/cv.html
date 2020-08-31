@@ -13,7 +13,7 @@
     {% for e_item in e_items %}
         <div id="post" name="education">
             <span class="one-line"><h3>{{ e_item.name }}: {{ e_item.start_year }} - {{ e_item.end_year }}</h3> <a href="{% url 'cv_edit' form_title='Edit Education' pk=e_item.pk %}">Edit</a></span>
-            <p>{{ e_item.description }}</p>
+            <p style="white-space: pre-wrap;">{{ e_item.description }}</p>
         </div>
     {% endfor %}
     <a href="{% url 'cv_new' form_title='New Education' %}">Add New Education</a>
@@ -23,7 +23,7 @@
     {% for t_item in t_items %}
         <div id="post" name="technical">
             <span class="one-line"><h3>{{ t_item.title }}</h3> <a href="{% url 'cv_edit' form_title='Edit Technical Skill' pk=t_item.pk %}">Edit</a></span>
-            <p>{{ t_item.content }}</p>
+            <p style="white-space: pre-wrap;">{{ t_item.content }}</p>
         </div>
     {% endfor %}
     <a href="{% url 'cv_new' form_title='New Technical Skill' %}">Add New Technical Skill</a>
@@ -33,7 +33,7 @@
     {% for w_item in w_items %}
         <div id="post" name="work">
             <span class="one-line"><h3>{{ w_item.title }}: {{ w_item.start_year }} - {{ w_item.end_year }}</h3> <a href="{% url 'cv_edit' form_title='Edit Work Experience' pk=w_item.pk %}">Edit</a></span>
-            <p>{{ w_item.description }}</p>
+            <p style="white-space: pre-wrap;">{{ w_item.description }}</p>
         </div>
     {% endfor %}
     <a href="{% url 'cv_new' form_title='New Work Experience' %}">Add New Work Experience</a>
@@ -43,7 +43,7 @@
     {% for o_item in o_items %}
         <div id="post" name="other">
             <span class="one-line"><h3>{{ o_item.name }}</h3> <a href="{% url 'cv_edit' form_title='Edit Interest or Skill' pk=o_item.pk %}">Edit</a></span>
-            <p>{{ o_item.content }}</p>
+            <p style="white-space: pre-wrap;">{{ o_item.content }}</p>
         </div>
     {% endfor %}
     <a href="{% url 'cv_new' form_title='Interest Or Skill' %}">Add New Interest or Skill</a>
