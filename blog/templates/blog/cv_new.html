@@ -2,7 +2,15 @@
 
 {% block content %}
     <h2>{{ form_title }}</h2>
+    {% for message in messages %}
+        <ul class='errorlist'>
+            <li>
+                {{ message }}
+            </li>
+        </ul>
+    {% endfor %}
     <form method="POST" class="post-form">{% csrf_token %}
         {{ form.as_p }}
         <button type="submit" name='save_button' class="save btn btn-default">Save</button>
+    </form>
 {% endblock %}

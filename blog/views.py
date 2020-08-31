@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.http import HttpResponse
+from django.contrib import messages
 from .models import Post, EducationItem, WorkItem, TechnicalItem, OtherItem
 from .forms import PostForm, EducationForm, WorkForm, TechnicalForm, OtherForm
 
@@ -80,6 +81,9 @@ def cv_new(request, form_title):
                     post = form.save(commit=False)
                     post.save()
                     return redirect('cv')
+                else:
+                    messages.error(request, 'The Start Year cannot be lower than the End Year')
+                    return render(request, 'blog/cv_new.html', {'form': form, 'form_title': title})
             else:
                 post = form.save(commit=False)
                 post.save()
